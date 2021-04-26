@@ -7,7 +7,7 @@ int main( int argc, char * argv[] ) {
     char * fn = argv[1];
     FILE *fp = fopen(fn, "r");
     if (fp == NULL) {
-        perror("cannot open file");
+        printf("cannot open file %s : %s\n",fn,strerror(errno));
         exit(1);
     }
 
