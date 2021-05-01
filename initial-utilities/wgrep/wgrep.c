@@ -14,19 +14,19 @@ int main(int argc, char *argv[])
     // That's the spec
     if (argc == 1) 
     {
-        printf("wgrep: searchterm [file ...]");
+        printf("wgrep: searchterm [file ...]\n");
         exit(0);
     }
 
-    int i = 1;
-    while (argv[i] != NULL)
+    int input_file_i = 1;
+    while (argv[input_file_i] != NULL)
     {
-        fn = argv[i];
+        fn = argv[input_file_i];
         stream = fopen(fn, "r");
 
         if (stream == NULL)
         {
-            printf("wcat: cannot open file\n");
+            printf("wgrep: cannot open file\n");
             // better error message, but the specs are to print as in previous line
             // printf("cannot open file %s : %s\n",fn,strerror(errno));
             exit(1);
@@ -34,11 +34,16 @@ int main(int argc, char *argv[])
 
         
         while ((nread = getline(&line, &len, stream)) != -1) {
-            printf("Retrieved line of length %zd:\n", nread);
-            fwrite(line, nread, 1, stdout);
+            // printf("Retrieved line of length %zd:\n", nread);
+            // fwrite(line, nread, 1, stdout);
+            for( int i = 0; i < ( len ) ; i++ ) {
+                // fputc(line[i],stdout);
+                printf("%d,%c",i,line[i]);
+            }
+
         }
 
-        i++;
+        input_file_i++;
 
     }
     exit(0);
