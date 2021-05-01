@@ -22,9 +22,9 @@ int main(int argc, char *argv[])
     while (argv[i] != NULL)
     {
         fn = argv[i];
-        fp = fopen(fn, "r");
+        stream = fopen(fn, "r");
 
-        if (fp == NULL)
+        if (stream == NULL)
         {
             printf("wcat: cannot open file\n");
             // better error message, but the specs are to print as in previous line
@@ -33,11 +33,11 @@ int main(int argc, char *argv[])
         }
 
         
-        while (fgets(buf, bs, fp) != NULL)
-        {
-            printf("%s", buf);
+        while ((nread = getline(&line, &len, stream)) != -1) {
+            printf("Retrieved line of length %zd:\n", nread);
+            fwrite(line, nread, 1, stdout);
         }
-        //printf("\n");
+
         i++;
 
     }
