@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
     size_t len = 0;
     ssize_t nread;
     char *fn;
+    char * pattern;
 
     // That's the spec
     if (argc == 1) 
@@ -18,7 +19,9 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    int input_file_i = 1;
+    pattern = argv[1];
+
+    int input_file_i = 2;
     while (argv[input_file_i] != NULL)
     {
         fn = argv[input_file_i];
@@ -36,9 +39,12 @@ int main(int argc, char *argv[])
         while ((nread = getline(&line, &len, stream)) != -1) {
             // printf("Retrieved line of length %zd:\n", nread);
             // fwrite(line, nread, 1, stdout);
-            for( int i = 0; i < ( len ) ; i++ ) {
+
+            
+            for( int i = 0; i < ( nread ) ; i++ ) {
+                putchar(line[i]);
                 // fputc(line[i],stdout);
-                printf("%d,%c",i,line[i]);
+                // printf("%d,%c",i,line[i]);
             }
 
         }
