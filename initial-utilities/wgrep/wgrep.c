@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
             int char_matched_count=0;
             bool line_matched=false;
             
-            for( int i = 0; i < ( len ) ; i++ ) {
+            for( int i = 0; i < ( nread ) ; i++ ) {
                 // fputc(line[i],stdout);
                 // printf("%d,%c",i,line[i]);
                 if( line[i] == pattern[char_matched_count] ) {
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
             }
             // printf("%d\n",line_nb);
             if( line_matched ) {
-                printf("%d:%s",line_nb,line);
+                printf("%d:%s",line_nb+1,line);
             }
             line_nb++;
 
