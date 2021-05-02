@@ -11,7 +11,6 @@ int main(int argc, char *argv[])
     size_t len = 0;
     ssize_t nread;
     char *fn;
-    char * pattern;
 
     // printf(argv[0]);
 

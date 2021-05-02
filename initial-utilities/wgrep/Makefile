@@ -4,11 +4,8 @@ SRCS = wgrep.c
 TARG = wgrep
 # specify compiler, compile flags, and needed libs
 CC = gcc
-<<<<<<< HEAD
 OPTS = -Wall -O -pedantic -g
-=======
 OPTS = -Wall -O -pedantic
->>>>>>> 011fd611f142c2348d03f3b457ab4d8d3ce11a42
 LIBS = -lm
 # this translates .c files in src list to .o’s
 OBJS = $(SRCS:.c=.o)
