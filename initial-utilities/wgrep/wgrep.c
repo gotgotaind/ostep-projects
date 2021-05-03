@@ -24,17 +24,31 @@ int main(int argc, char *argv[])
     char * pattern = argv[1];
     size_t pattern_length=strlen(pattern);
 
-    int input_file_i = 2;
-    while (argv[input_file_i] != NULL)
+    // file the list of file to parse
+    // in case no file name is provided, must just be stdin
+    if(argc == 2) {
+        char * file_list[1];
+        file_list[0]="stdin";
+    }
+    else
     {
-        fn = argv[input_file_i];
+        char * file_list[argc-2];
+        for( int i = 2; i < argc; i++ ) {
+            file_list[i-2]=argv[i];
+        }
+    }
+
+    int input_file_i = 0;
+    while (file_list[input_file_i] != NULL)
+    {
+        fn = file_list[input_file_i];
         stream = fopen(fn, "r");
 
         if (stream == NULL)
         {
             printf("wgrep: cannot open file\n");
             // better error message, but the specs are to print as in previous line
-            printf("cannot open file %s : %s\n",fn,strerror(errno));
+            // printf("cannot open file %s : %s\n",fn,strerror(errno));
             exit(1);
         }
 
