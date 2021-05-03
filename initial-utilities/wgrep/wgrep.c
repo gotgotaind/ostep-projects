@@ -24,18 +24,26 @@ int main(int argc, char *argv[])
     char * pattern = argv[1];
     size_t pattern_length=strlen(pattern);
 
-    // file the list of file to parse
-    // in case no file name is provided, must just be stdin
+
+    
+
+    // if no file to grep is provided on the command line,
+    // we should grep stdin. So we build a list of 
+    // files to grep taking this case into account
+    // The list we use is a NULL terminated list of size 
+    // larger the the number of arguments in order to avoid
+    // malloc.
+    char * file_list[argc];
     if(argc == 2) {
-        char * file_list[1];
         file_list[0]="stdin";
+        file_list[1]=NULL;
     }
     else
     {
-        char * file_list[argc-2];
         for( int i = 2; i < argc; i++ ) {
             file_list[i-2]=argv[i];
         }
+        file_list[argc-2]=NULL;
     }
 
     int input_file_i = 0;
@@ -53,7 +61,7 @@ int main(int argc, char *argv[])
         }
 
         int line_nb=0;
-        while ((nread = getline(&line, &len, stream)) != -1) {
+        while ((nread = getline(&line, &len, stdin)) != -1) {
             // printf("Retrieved line of length %zd:\n", nread);
             // fwrite(line, nread, 1, stdout);
             int char_matched_count=0;
@@ -65,9 +73,14 @@ int main(int argc, char *argv[])
                 if( line[i] == pattern[char_matched_count] ) {
                     char_matched_count++;
                     if( char_matched_count == pattern_length ) {
+                        // printf("%c,%c,%d\n",line[i],pattern[char_matched_count-1],i);
                         line_matched=true;
                         break;
                     }
+                }
+                else
+                {
+                    char_matched_count=0;
                 }
             }
             // printf("%d\n",line_nb);
