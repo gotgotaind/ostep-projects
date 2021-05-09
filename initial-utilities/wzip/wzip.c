@@ -37,6 +37,9 @@ void wzip(FILE *stream)
         printf("ferror\n");
     }
     if( feof(stream) != 0 ) {
+        for(int i=0;i<nread;i++) {
+            printf("%c",buf[i]);
+        }
         printf("feof\n");
     }
 
