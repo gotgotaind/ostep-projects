@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 void wzip(FILE *stream)
 {
@@ -11,7 +12,7 @@ void wzip(FILE *stream)
     size_t total_read=0;
     unsigned char buf[bs];
 
-    printf("in wzip\n");
+    // printf("in wzip\n");
 
     if (stream == NULL)
     {
@@ -21,26 +22,51 @@ void wzip(FILE *stream)
         exit(1);
     }
 
-    
+    uint32_t rl=0;
+    unsigned char cc;
+    int first_char=1;
 
-    while ( ( nread=fread(buf, sizeof(unsigned char), bs, stream) ) == bs)
+    while ( (ferror(stream) == 0) && (feof(stream) == 0) )
     {
+        nread=fread(buf, sizeof(unsigned char), bs, stream);
         // printf("in while fread\n");
-        for(int i=0;i<bs;i++) {
-            printf("%c",buf[i]);
+        for(int i=0;i<nread;i++) {
+            if( first_char == 1 ) {
+                rl=1;
+                cc=buf[i];
+                first_char=0;
+            }
+            else
+            {
+                if( cc == buf[i] ) {
+                    rl++;
+                }
+                else
+                {
+                    size_t fw=fwrite(&rl, sizeof(rl), 1,stdout);
+                    if( fw != 1 ) {
+                        printf("wzip: failed to fwrite rl\n");
+                    }
+                    fw=fwrite(&cc, sizeof(cc), 1,stdout);
+                    if( fw != 1 ) {
+                        printf("wzip: failed to fwrite cc\n");
+                    }
+                    cc = buf[i];
+                    rl=1;
+                }
+            }
+            // printf("%c",buf[i]);
         }
         
         total_read=total_read+nread;
     }
 
     if( ferror(stream) != 0 ) {
-        printf("ferror\n");
+        printf("wzip: error during fread\n");
+        exit(1);
     }
-    if( feof(stream) != 0 ) {
-        for(int i=0;i<nread;i++) {
-            printf("%c",buf[i]);
-        }
-        printf("feof\n");
+    if( feof(stream) == 0 ) {
+        printf("wzip: fread stopped reading the file while feof was not reach and ferror was not raised.\n");
     }
 
 }
