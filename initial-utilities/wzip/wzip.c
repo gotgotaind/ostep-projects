@@ -5,7 +5,27 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-void wzip(FILE *stream)
+void print_rl_and_char(uint32_t * rl, unsigned char * cc) {
+    size_t fw=1;
+    // printf("HERE\n");
+    // write the running length
+    fw=fwrite(rl, sizeof(*rl), 1,stdout);
+    // printf("%d",*rl);
+    if( fw != 1 ) {
+        printf("wzip: failed to fwrite rl\n");
+        exit(1);
+    }
+
+    // write the char
+    fw=fwrite(cc, sizeof(*cc), 1,stdout);
+    // printf("%c\n",*cc);
+    if( fw != 1 ) {
+        printf("wzip: failed to fwrite cc\n");
+        exit(1);
+    }
+}
+
+void wzip(bool *first_char, uint32_t *rl, unsigned char *cc, bool last_file,FILE *stream)
 {
     size_t bs = 16;
     size_t nread;
@@ -22,38 +42,34 @@ void wzip(FILE *stream)
         exit(1);
     }
 
-    uint32_t rl=0;
-    unsigned char cc;
-    int first_char=1;
+
 
     while ( (ferror(stream) == 0) && (feof(stream) == 0) )
     {
         nread=fread(buf, sizeof(unsigned char), bs, stream);
         // printf("in while fread\n");
         for(int i=0;i<nread;i++) {
-            if( first_char == 1 ) {
-                rl=1;
-                cc=buf[i];
-                first_char=0;
+            if( *first_char ) {
+                *rl=1;
+                *cc=buf[i];
+                *first_char=false;
             }
             else
             {
-                if( (cc != buf[i]) || (feof(stream) != 0) ) {
-                    size_t fw=fwrite(&rl, sizeof(rl), 1,stdout);
-                    printf("%d",rl);
-                    if( fw != 1 ) {
-                        printf("wzip: failed to fwrite rl\n");
+                if( *cc == buf[i] ) {
+                    *rl=*rl+1;
+                    // if we reached the end of stream and it's the last character we've read
+                    // print the char and its running length
+                    if( (feof(stream) != 0) && (i==(nread-1)) && last_file) {
+                        
+                        print_rl_and_char(rl,cc);
                     }
-                    fw=fwrite(&cc, sizeof(cc), 1,stdout);
-                    if( fw != 1 ) {
-                        printf("wzip: failed to fwrite cc\n");
-                    }
-                    cc = buf[i];
-                    rl=1;
                 }
                 else
                 {
-                    rl++;
+                    print_rl_and_char(rl,cc);
+                    *cc = buf[i];
+                    *rl=1;
                 }
             }
             // printf("%c",buf[i]);
@@ -84,15 +100,25 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    // running length
+    uint32_t rl=0;
+    // current char
+    unsigned char cc;
+    // there is a special case for the first char we read
+    bool first_char=true;
+    // and there is a special case also if it's the last file
+    // we're reading.
+    bool last_file;
+
     int input_file_i = 1;
     while (argv[input_file_i] != NULL)
     {
         fn = argv[input_file_i];
         stream = fopen(fn, "r");
-        wzip(stream);
+        last_file=(input_file_i==(argc-1));
+        wzip(&first_char,&rl,&cc,last_file,stream);
         input_file_i++;
     }
     
     exit(0);
-    // aaaabbbcc
 }
