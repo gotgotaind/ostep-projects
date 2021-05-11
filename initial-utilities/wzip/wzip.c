@@ -38,12 +38,9 @@ void wzip(FILE *stream)
             }
             else
             {
-                if( cc == buf[i] ) {
-                    rl++;
-                }
-                else
-                {
+                if( (cc != buf[i]) || (feof(stream) != 0) ) {
                     size_t fw=fwrite(&rl, sizeof(rl), 1,stdout);
+                    printf("%d",rl);
                     if( fw != 1 ) {
                         printf("wzip: failed to fwrite rl\n");
                     }
@@ -53,6 +50,10 @@ void wzip(FILE *stream)
                     }
                     cc = buf[i];
                     rl=1;
+                }
+                else
+                {
+                    rl++;
                 }
             }
             // printf("%c",buf[i]);
@@ -93,4 +94,5 @@ int main(int argc, char *argv[])
     }
     
     exit(0);
+    // aaaabbbcc
 }
