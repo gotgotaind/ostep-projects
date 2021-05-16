@@ -50,28 +50,34 @@ void wzip(bool *first_char, uint32_t *rl, unsigned char *cc, bool last_file,FILE
         // printf("in while fread\n");
         for(int i=0;i<nread;i++) {
             if( *first_char ) {
-                *rl=1;
+                *rl=0;
                 *cc=buf[i];
                 *first_char=false;
             }
-            else
-            {
-                if( *cc == buf[i] ) {
-                    *rl=*rl+1;
-                    // if we reached the end of stream and it's the last character we've read
-                    // print the char and its running length
-                    if( (feof(stream) != 0) && (i==(nread-1)) && last_file) {
-                        
-                        print_rl_and_char(rl,cc);
-                    }
-                }
-                else
-                {
+
+            if( *cc == buf[i] ) {
+                *rl=*rl+1;
+                // if we reached the end of stream and it's the last character we've read
+                // print the char and its running length
+                // if( (feof(stream) != 0) && (i==(nread-1)) && last_file) {
+                // printf("Last file : %s\n",last_file ? "true" : "false");
+                // printf("feof : %s\n", (feof(stream) != 0) ? "true" : "false");
+                // printf("i : %d,nread-1 : %zu\n",i,(nread-1));
+                if( (feof(stream) != 0) && (i==(nread-1)) && last_file) {
+                    
                     print_rl_and_char(rl,cc);
-                    *cc = buf[i];
-                    *rl=1;
                 }
             }
+            else
+            {
+                // printf("Last file : %s\n",last_file ? "true" : "false");
+                // printf("feof : %s\n", (feof(stream) != 0) ? "true" : "false");
+                // printf("i : %d,nread-1 : %zu\n",i,(nread-1));
+                print_rl_and_char(rl,cc);
+                *cc = buf[i];
+                *rl=1;
+            }
+            
             // printf("%c",buf[i]);
         }
         
@@ -116,6 +122,7 @@ int main(int argc, char *argv[])
         fn = argv[input_file_i];
         stream = fopen(fn, "r");
         last_file=(input_file_i==(argc-1));
+
         wzip(&first_char,&rl,&cc,last_file,stream);
         input_file_i++;
     }
