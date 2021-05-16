@@ -55,6 +55,7 @@ void wzip(bool *first_char, uint32_t *rl, unsigned char *cc, bool last_file,FILE
                 *first_char=false;
             }
 
+
             if( *cc == buf[i] ) {
                 *rl=*rl+1;
                 // if we reached the end of stream and it's the last character we've read
@@ -63,10 +64,7 @@ void wzip(bool *first_char, uint32_t *rl, unsigned char *cc, bool last_file,FILE
                 // printf("Last file : %s\n",last_file ? "true" : "false");
                 // printf("feof : %s\n", (feof(stream) != 0) ? "true" : "false");
                 // printf("i : %d,nread-1 : %zu\n",i,(nread-1));
-                if( (feof(stream) != 0) && (i==(nread-1)) && last_file) {
-                    
-                    print_rl_and_char(rl,cc);
-                }
+                
             }
             else
             {
@@ -78,10 +76,15 @@ void wzip(bool *first_char, uint32_t *rl, unsigned char *cc, bool last_file,FILE
                 *rl=1;
             }
             
+            
             // printf("%c",buf[i]);
-        }
         
+        if( (feof(stream) != 0) && (i==(nread-1)) && last_file) {
+                
+                print_rl_and_char(rl,cc);
+        }
         total_read=total_read+nread;
+        }
     }
 
     if( ferror(stream) != 0 ) {
