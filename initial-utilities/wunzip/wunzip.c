@@ -5,39 +5,20 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-void print_rl_and_char(uint32_t * rl, unsigned char * cc) {
-    size_t fw=1;
-    // printf("HERE\n");
-    // write the running length
-    fw=fwrite(rl, sizeof(*rl), 1,stdout);
-    // printf("%d",*rl);
-    if( fw != 1 ) {
-        printf("wzip: failed to fwrite rl\n");
-        exit(1);
-    }
-
-    // write the char
-    fw=fwrite(cc, sizeof(*cc), 1,stdout);
-    // printf("%c\n",*cc);
-    if( fw != 1 ) {
-        printf("wzip: failed to fwrite cc\n");
-        exit(1);
-    }
-}
-
 void wunzip(FILE *stream)
 {
+
     struct ele {
     // running length
     uint32_t rl;
     // current char
-    unsigned char cc;
-    };
+    unsigned char c;
+    } __attribute__((packed));
 
     size_t bs = 16;
     size_t nread;
     size_t total_read=0;
-    ele buf[bs];
+    struct ele buf[bs];
 
     // printf("in wzip\n");
 
@@ -53,39 +34,15 @@ void wunzip(FILE *stream)
 
     while ( (ferror(stream) == 0) && (feof(stream) == 0) )
     {
-        nread=fread(buf, sizeof(unsigned char), bs, stream);
-        // printf("in while fread\n");
+        nread=fread(buf, sizeof(struct ele), bs, stream);
+        // printf("in while fread; nread:%ld, size:%ld\n",nread,sizeof(struct ele));
         for(int i=0;i<nread;i++) {
-            if( *first_char ) {
-                *rl=0;
-                *cc=buf[i];
-                *first_char=false;
-            }
-
-            if( *cc == buf[i] ) {
-                *rl=*rl+1;
-                // if we reached the end of stream and it's the last character we've read
-                // print the char and its running length
-                // if( (feof(stream) != 0) && (i==(nread-1)) && last_file) {
-                // printf("Last file : %s\n",last_file ? "true" : "false");
-                // printf("feof : %s\n", (feof(stream) != 0) ? "true" : "false");
-                // printf("i : %d,nread-1 : %zu\n",i,(nread-1));
-                if( (feof(stream) != 0) && (i==(nread-1)) && last_file) {
-                    
-                    print_rl_and_char(rl,cc);
+                // printf("rl: %d, char: %c\n",buf[i].rl,buf[i].c);
+                for (size_t j = 0; j < buf[i].rl; j++)
+                {
+                    printf("%c",buf[i].c);
                 }
-            }
-            else
-            {
-                // printf("Last file : %s\n",last_file ? "true" : "false");
-                // printf("feof : %s\n", (feof(stream) != 0) ? "true" : "false");
-                // printf("i : %d,nread-1 : %zu\n",i,(nread-1));
-                print_rl_and_char(rl,cc);
-                *cc = buf[i];
-                *rl=1;
-            }
-            
-            // printf("%c",buf[i]);
+                
         }
         
         total_read=total_read+nread;
