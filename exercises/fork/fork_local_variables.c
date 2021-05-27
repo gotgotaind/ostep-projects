@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <sys/wait.h>
 
 int main(int argc, char * argv[]) {
@@ -12,13 +13,19 @@ int main(int argc, char * argv[]) {
     }
     else if( rc == 0 ) {
         printf("fork succeeded, I'm a child, my pid is %d, and my parent pid is %d\n",getpid(),getppid());
-        printf("child : x is %d\n",x);
-        x=200;
-        printf("child : x is now %d\n",x);
+        while(true) {
+            x=x+1;
+            printf("child : x is %d\n",x);
+            sleep(1);
+        }
     }
     else {
         printf("fork succeeded, I'm the parent, my pid is %d, and the child I forked is %d\n",getpid(),rc);
-        printf("parent : x is %d ( before wait )\n",x);
+        while(true) {
+            x=x-1;
+            printf("parent : x is %d ( before wait )\n",x);
+            sleep(1);
+        }
         wait(NULL);
         printf("parent : x is %d ( after wait )\n",x);
     }

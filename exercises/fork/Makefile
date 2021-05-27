@@ -1,5 +1,5 @@
 # specify all source files here
-SRCS = fork_fh.c
+SRCS = $(s).c
 # specify target here (name of executable)
 TARG = fork
 # specify compiler, compile flags, and needed libs
