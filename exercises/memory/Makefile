@@ -4,7 +4,8 @@ SRCS = $(s).c
 TARG = $(s)
 # specify compiler, compile flags, and needed libs
 CC = gcc
-OPTS = -Wall -O -pedantic -g
+OPTS = -Wall -pedantic -g
+#OPTS = -Wall -O -pedantic -g
 #OPTS = -Wall -O -pedantic
 LIBS = -lm
 # this translates .c files in src list to .o’s
