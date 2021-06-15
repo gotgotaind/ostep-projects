@@ -1,11 +1,14 @@
 
-int PAGESIZE=1024*4;
-int jump = PAGESIZE / sizeof(int);
+int main(int argc,char* argv[] ) {
 
-int NUMPAGES=4;
+    int PAGESIZE=1024*4;
+    int jump = PAGESIZE / sizeof(int);
 
-int a[NUMPAGES*PAGESIZE / sizeof(int)];
+    int NUMPAGES=4;
 
-for(i=0; i<NUMPAGES; i+=jump) {
-    a[i]+=1;
+    int a[NUMPAGES*PAGESIZE / sizeof(int)];
+
+    for(int i=0; i<NUMPAGES; i+=jump) {
+        a[i]+=1;
+    }
 }
