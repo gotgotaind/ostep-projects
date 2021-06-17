@@ -8,7 +8,7 @@
                         } while (0)
 
 enum { NS_PER_SECOND = 1000000000 };
-enum { AVG_CLOCK_GETTIME_NS = 35 };
+enum { AVG_CLOCK_GETTIME_NS = 35 };  // got that by testing with an empty loop
 
 long clk() {
     struct timespec current_time;
